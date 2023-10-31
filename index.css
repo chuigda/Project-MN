@@ -1,0 +1,41 @@
+* {
+    font-family: monospace;
+    user-select: none;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 0.5em;
+}
+
+#main-canvas {
+    border: 1px solid black;
+    width: 1200px;
+    height: 580px;
+}
+
+#control-area {
+    border: 1px solid black;
+    width: 1200px;
+    display: flex;
+}
+
+#control-area > div {
+    margin: 0.2em;
+}
+
+#status-display {
+    flex: 0 0 400px;
+}
+
+#lcd-display {
+    flex: 1 0 auto;
+}
+
+#user-input {
+    width: 56px;
+    height: 56px;
+    border: 1px solid red;
+}
