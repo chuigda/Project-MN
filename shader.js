@@ -1,4 +1,4 @@
-const forwardPropagateMultiplyVS = `#version 300 es
+const genericFillingVS = `#version 300 es
 precision highp float;
 
 in vec2 aPosition;
@@ -25,17 +25,6 @@ void main() {
     float weight = texelFetch(weightTex, fragCoord, 0).r;
 
     fragColor = vec4(inValue * weight, 0.0, 0.0, 1.0);
-}
-`
-
-const forwardPropagateAddVS = `#version 300 es
-precision highp float;
-precision highp int;
-
-in vec2 aPosition;
-
-void main() {
-    gl_Position = vec4(aPosition, 0.0, 1.0);
 }
 `
 
@@ -69,29 +58,21 @@ void main() {
 }
 `
 
-const simpleTexDisplayVS = `#version 300 es
-precision highp float;
-
-in vec2 aPosition;
-out vec2 vTexCoord;
-
-void main() {
-    vTexCoord = aPosition + vec2(0.5);
-    gl_Position = vec4(aPosition, 0.0, 1.0);
-}
-`
-
 const simpleTexDisplayFS = `#version 300 es
 precision highp float;
 
 uniform sampler2D tex;
-in vec2 vTexCoord;
+uniform int canvasHeight;
 out vec4 fragColor;
 
 void main() {
-    float value = texture(tex, vTexCoord).r;
-    value = value + 0.5;
-
-    fragColor = vec4(value, value, value, 1.0);
+    ivec2 fragCoord = ivec2(gl_FragCoord.xy);
+    fragCoord.y = canvasHeight - fragCoord.y;
+    float value = texelFetch(tex, fragCoord, 0).r;
+    if (value > 0.0) {
+        fragColor = vec4(value, 0.0, 0.0, 1.0);
+    } else {
+        fragColor = vec4(0.0, 0.0, -value, 1.0);
+    }
 }
 `

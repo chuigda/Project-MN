@@ -1,5 +1,7 @@
-const MainCanvasWidth = 1200;
-const MainCanvasHeight = 580;
+const pixelRatio = window.devicePixelRatio || 1.0
+
+const MainCanvasWidth = 1200 * pixelRatio
+const MainCanvasHeight = 580 * pixelRatio
 
 const canvasCoordToWebGL = (x, y) => {
     return [
@@ -10,6 +12,9 @@ const canvasCoordToWebGL = (x, y) => {
 
 const applicationStart = () => {
     const canvas = $('main-canvas')
+    canvas.width = MainCanvasWidth
+    canvas.height = MainCanvasHeight
+
     const gl2 = canvas.getContext('webgl2')
     if (!gl2) {
         alert("你的浏览器不支持 WebGL2，因此无法运行本程序")
@@ -27,11 +32,11 @@ const applicationStart = () => {
     gl2.clearColor(0.0, 0.0, 0.0, 1.0)
     gl2.clear(gl2.COLOR_BUFFER_BIT)
 
-    const forwardPropagateMultiply = createShaderProgram(gl2, forwardPropagateMultiplyVS, forwardPropagateMultiplyFS)
-    const forwardPropagateAdd = createShaderProgram(gl2, forwardPropagateAddVS, forwardPropagateAddFS)
+    const forwardPropagateMultiply = createShaderProgram(gl2, genericFillingVS, forwardPropagateMultiplyFS)
+    const forwardPropagateAdd = createShaderProgram(gl2, genericFillingVS, forwardPropagateAddFS)
     const fillingRect = createSimpleRectVBO(gl2, [-1.0, 1.0], [1.0, -1.0])
 
-    const simpleRender = createShaderProgram(gl2, simpleTexDisplayVS, simpleTexDisplayFS)
+    const simpleRender = createShaderProgram(gl2, genericFillingVS, simpleTexDisplayFS)
 
     const { framebuffer, texture } = createFloatRenderTarget(gl2, 20 * 28, 15 * 28, () => (Math.random() - 0.5) / 5.0)
 
@@ -47,6 +52,8 @@ const applicationStart = () => {
 
     const tex = gl2.getUniformLocation(simpleRender, 'tex')
     gl2.uniform1i(tex, 0)
+    const canvasH = gl2.getUniformLocation(simpleRender, 'canvasHeight')
+    gl2.uniform1i(canvasH, MainCanvasHeight)
     gl2.activeTexture(gl2.TEXTURE0)
     gl2.bindTexture(gl2.TEXTURE_2D, texture)
 
