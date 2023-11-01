@@ -15,9 +15,6 @@ const applicationStart = () => {
         alert("你的浏览器不支持 WebGL2，因此无法运行本程序")
         return
     }
-    gl2.clearColor(0.0, 0.0, 0.0, 1.0)
-    gl2.clear(gl2.COLOR_BUFFER_BIT)
-
 
     const ext = gl2.getExtension('EXT_color_buffer_float')
     if (!ext) {
@@ -25,30 +22,27 @@ const applicationStart = () => {
         return
     }
 
-    const forwardPropagate = createShaderProgram(gl2, forwardPropagateVS, forwardPropagateFS)
+    gl2.disable(gl2.FRAMEBUFFER_SRGB)
+    gl2.enable(gl2.CULL_FACE)
+    gl2.clearColor(0.0, 0.0, 0.0, 1.0)
+    gl2.clear(gl2.COLOR_BUFFER_BIT)
+
+    const forwardPropagateMultiply = createShaderProgram(gl2, forwardPropagateMultiplyVS, forwardPropagateMultiplyFS)
+    const forwardPropagateAdd = createShaderProgram(gl2, forwardPropagateAddVS, forwardPropagateAddFS)
+    const fillingRect = createSimpleRectVBO(gl2, [-1.0, 1.0], [1.0, -1.0])
+
     const simpleRender = createShaderProgram(gl2, simpleTexDisplayVS, simpleTexDisplayFS)
 
-    const { framebuffer, texture } = createFloatRenderTarget(gl2, 576, 576, () => (Math.random() - 0.5) / 2.0)
+    const { framebuffer, texture } = createFloatRenderTarget(gl2, 20 * 28, 15 * 28, () => (Math.random() - 0.5) / 5.0)
 
-    const [x0, y0] = canvasCoordToWebGL(0, 0)
-    const [x1, y1] = canvasCoordToWebGL(576, 576)
-
-    // use 2 triangles to fill the texture area on the canvas
-    const vertices = [
-        x0, y0,
-        x1, y0,
-        x0, y1,
-        x0, y1,
-        x1, y0,
-        x1, y1
-    ]
-    const vertexBuffer = gl2.createBuffer()
-    gl2.bindBuffer(gl2.ARRAY_BUFFER, vertexBuffer)
-    gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(vertices), gl2.STATIC_DRAW)
+    const vertexBuffer = createSimpleRectVBO(gl2,
+                                             canvasCoordToWebGL(0, 0),
+                                             canvasCoordToWebGL(20 * 28, 15 * 28));
 
     gl2.useProgram(simpleRender)
     const aPosition = gl2.getAttribLocation(simpleRender, 'aPosition')
     gl2.enableVertexAttribArray(aPosition)
+    gl2.bindBuffer(gl2.ARRAY_BUFFER, vertexBuffer)
     gl2.vertexAttribPointer(aPosition, 2, gl2.FLOAT, false, 0, 0)
 
     const tex = gl2.getUniformLocation(simpleRender, 'tex')

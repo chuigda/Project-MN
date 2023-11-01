@@ -11,13 +11,13 @@ body {
 }
 
 #main-canvas {
-    border: 1px solid black;
+    border: 2px solid red;
     width: 1200px;
     height: 580px;
 }
 
 #control-area {
-    border: 1px solid black;
+    border: 2px solid black;
     width: 1200px;
     display: flex;
 }
@@ -37,5 +37,5 @@ body {
 #user-input {
     width: 56px;
     height: 56px;
-    border: 1px solid red;
+    border: 2px solid black;
 }

@@ -6,7 +6,7 @@ const createFloatRenderTarget = (gl, width, height, value) => {
     gl.bindTexture(gl.TEXTURE_2D, texture)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
- 
+
     const data = new Float32Array(width * height)
     if (typeof value === 'function') {
         for (let i = 0; i < data.length; i++) {
@@ -58,4 +58,20 @@ const createShaderProgram = (gl, vsSource, fsSource) => {
     }
 
     return shaderProgram
+}
+
+const createSimpleRectVBO = (gl, [x0, y0], [x1, y1]) => {
+    const vertices = [
+        x0, y0,
+        x0, y1,
+        x1, y0,
+        x0, y1,
+        x1, y1,
+        x1, y0,
+    ]
+    const vertexBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+    gl.bindBuffer(gl.ARRAY_BUFFER, null)
+    return vertexBuffer
 }
